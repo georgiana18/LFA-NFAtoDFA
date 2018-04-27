@@ -1,6 +1,7 @@
 #include "Automaton.h"
 #include <vector>
 #include <algorithm>
+#include <cstring>
 Automaton::Automaton()
 {
     numberStates=0;
@@ -173,12 +174,38 @@ void Automaton::ConvertNFAtoDFA()
                 TransitionsDFA[numberTransitionsDFA].character=Alphabet[j];
                 numberTransitionsDFA++;
                 StatesDFA.push_back(step);
-                numberStatesDFA++;
-                //Nr de stari creste
+                numberStatesDFA++;   ///Nr de stari creste
             }
         }
         last++;
         ///ultima stare de la care am creeat noi seturi de stari, nu e aceeasi cu numberStatesDFA
         ///deoarece o stare in DFA avand subset poate adauga mai multe stari cu diferite litere
+    }
+}
+
+
+bool Automaton::VerificationWord(char *word, int CurrentState, int position)
+{
+    int i;
+    if ((position==strlen(word))&&(CurrentState<=numberStates))
+    {
+        for (i=1; i<=numberFinalStates; i++)
+            if (CurrentState==FinalStates[i])
+            {
+                accepted=1;
+                return true;
+            }
+    }
+    else
+    {
+        for (i=1; i<=numberTransitions; i++)
+        {
+            if (accepted==1) return true;
+            if ((Transitions[i].state1==CurrentState)&&(Transitions[i].character==word[position]))
+            {
+                VerificationWord(word,Transitions[i].state2,position+1);
+            }
+        }
+        return false;
     }
 }
